@@ -2,12 +2,14 @@ package com.closeit.interview.dataloader;
 
 import com.closeit.interview.dataobject.Airport;
 import com.opencsv.CSVReader;
+import org.springframework.stereotype.Component;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.*;
 
+@Component
 class AirlineDataFileProcessor {
 
     private static final String ORIGIN = "Origin";
@@ -21,7 +23,9 @@ class AirlineDataFileProcessor {
     
     private int originIndex, destinationIndex, arrivalDelayIndex, departureDelayIndex, cancelledIndex;
 
-    AirlineDataFileProcessor(String inputFileName) {
+
+    void setInputFileName(String inputFileName)
+    {
         this.inputFileName = inputFileName;
     }
 
@@ -42,23 +46,22 @@ class AirlineDataFileProcessor {
         while ((line = reader.readNext()) != null) {
 
             readLines++;
-            boolean flightWasCancelled = CANCELLED_INDICATOR.equals(line[cancelledIndex]);
 
-            if (flightWasCancelled)
+            if (CANCELLED_INDICATOR.equals(line[cancelledIndex]))
                 continue;
 
             String originAirport = line[originIndex];
             String destinationAirport = line[destinationIndex];
 
-            Airport origin = airports.getOrDefault(originAirport, new Airport(originAirport, 0, 0, 0.0, 0.0));
-            Airport destination = airports.getOrDefault(destinationAirport, new Airport(destinationAirport, 0, 0, 0.0, 0.0));
+            Airport origin = airports.getOrDefault(originAirport, new Airport(originAirport));
+            Airport destination = airports.getOrDefault(destinationAirport, new Airport(destinationAirport));
 
             // The file contains NA on some places
-            double departureDelay = isDelayPresent(line[departureDelayIndex]) ? 0.0 : Double.valueOf(line[departureDelayIndex]);
-            double arrivalDelay = isDelayPresent(line[arrivalDelayIndex]) ? 0.0 : Double.valueOf(line[arrivalDelayIndex]);
+            double departureDelay = isStringNotAvailable(line[departureDelayIndex]) ? 0.0 : Double.valueOf(line[departureDelayIndex]);
+            double arrivalDelay = isStringNotAvailable(line[arrivalDelayIndex]) ? 0.0 : Double.valueOf(line[arrivalDelayIndex]);
 
-            airports.put(originAirport, new Airport(originAirport, origin.arrivalsCount, origin.departureCount + 1, origin.arrivalsDelay, origin.departuresDelay + departureDelay));
-            airports.put(destinationAirport, new Airport(destinationAirport, destination.arrivalsCount + 1, destination.departureCount, destination.arrivalsDelay + arrivalDelay, destination.departuresDelay));
+            airports.put(originAirport, airportWithDepartureDelay(originAirport, origin, departureDelay));
+            airports.put(destinationAirport, airportWithArrivalDelay(destinationAirport, destination, arrivalDelay));
 
             if (readLines % 10000 == 0)
                 System.out.println("Read and processed " + readLines + "lines, currently known " + airports.entrySet().size() + " airports");
@@ -69,7 +72,15 @@ class AirlineDataFileProcessor {
         return airports.values();
     }
 
-    private boolean isDelayPresent(String data)
+    private Airport airportWithArrivalDelay(String destinationAirport, Airport destination, double arrivalDelay) {
+        return new Airport(destinationAirport, destination.arrivalsCount + 1, destination.departureCount, destination.arrivalsDelay + arrivalDelay, destination.departuresDelay);
+    }
+
+    private Airport airportWithDepartureDelay(String originAirport, Airport origin, double departureDelay) {
+        return new Airport(originAirport, origin.arrivalsCount, origin.departureCount + 1, origin.arrivalsDelay, origin.departuresDelay + departureDelay);
+    }
+
+    private boolean isStringNotAvailable(String data)
     {
         return "NA".equals(data);
     }

@@ -1,7 +1,9 @@
 package com.closeit.interview.dataloader;
 
 import com.closeit.interview.dataobject.Airport;
+import com.closeit.interview.dataobject.YearLog;
 import com.closeit.interview.repository.AirportRepository;
+import com.closeit.interview.repository.YearLogRepository;
 import org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStream;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -14,6 +16,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
 
@@ -25,7 +28,13 @@ import java.util.Collection;
 public class USDTDataLoader {
 
     @Autowired
-    private AirportRepository repository;
+    private AirportRepository airportRepository;
+
+    @Autowired
+    private YearLogRepository yearLogRepository;
+
+    @Autowired
+    private AirlineDataFileProcessor dataFileProcessor;
 
     @Value("${application.temp}")
     private String tempFolder;
@@ -40,34 +49,57 @@ public class USDTDataLoader {
 
     public void prepareData() throws IOException
     {
-        getAndExtractFile();
-        processFile();
+
+        YearLog yearLog = yearLogRepository.findByYear(year);
+
+        if (yearLog == null)
+        {
+
+            getAndExtractFile();
+            processFile();
+            cleanUpTempFiles();
+            logSuccessfullDownload();
+        }
+        else
+        {
+            debug("Data already found in DB, exiting set up process: ", yearLog.info);
+        }
+    }
+
+
+
+    private void cleanUpTempFiles()
+    {
+        String zippedOutputFileName = getZippedOutputFileName();
+        if (new File(zippedOutputFileName).delete())
+            debug("Deleted downloaded file: ", zippedOutputFileName);
+
+
+        String unzippedOutputFileName = getUnzippedOutputFileName();
+        if (new File(unzippedOutputFileName).delete())
+            debug("Deleted extracted file: ", unzippedOutputFileName);
+
     }
 
     private void processFile() throws IOException
     {
-        repository.deleteAll();
+        airportRepository.deleteAll();
 
-        AirlineDataFileProcessor processor = new AirlineDataFileProcessor(getUnzippedOutputFileName());
+        dataFileProcessor.setInputFileName(getUnzippedOutputFileName());
 
-        Collection<Airport> airports = processor.processFile();
+        Collection<Airport> airports = dataFileProcessor.processFile();
 
-        repository.saveAll(airports);
+        airportRepository.saveAll(airports);
     }
 
 
-    public void getAndExtractFile() throws IOException
+    private void getAndExtractFile() throws IOException
     {
         debug("Start download", getSourceUrl());
         downloadFile();
         debug("Start extracting", getZippedOutputFileName());
         extractFile();
         debug("File prepared", getUnzippedOutputFileName());
-    }
-
-    private void debug(String message, String file)
-    {
-        System.out.println(message + ":" + file + " at " + LocalDateTime.now());
     }
 
     private void extractFile() throws IOException
@@ -90,6 +122,10 @@ public class USDTDataLoader {
         fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
     }
 
+    private void logSuccessfullDownload() {
+        YearLog yearLog = new YearLog(year, LocalDate.now(), "Successfully downloaded from " + getSourceUrl());
+    }
+
     private String getUnzippedOutputFileName()
     {
         return tempFolder + "/" + year + ".csv";
@@ -103,5 +139,10 @@ public class USDTDataLoader {
     private String getSourceUrl()
     {
         return url + year + FILE_SUFFIX;
+    }
+
+    private void debug(String message, String additionalInfo)
+    {
+        System.out.println(message + ":" + additionalInfo + " at " + LocalDateTime.now());
     }
 }

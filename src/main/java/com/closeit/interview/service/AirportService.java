@@ -19,9 +19,9 @@ public class AirportService {
         Airport lax = repository.findByAirportCode("LAX");
 
         if (lax != null)
-            return  "Average delay to LAX : " +  String.valueOf(lax.arrivalsDelay / lax.arrivalsCount) + " minutes";
+            return  "Average delay to LAX : " +  (lax.arrivalsDelay / lax.arrivalsCount) + " minutes";
 
-        return "Application has not been initialized properly yet, data not found";
+        return "Application has (likely) not been initialized properly yet, requested data not found.";
     }
 
 

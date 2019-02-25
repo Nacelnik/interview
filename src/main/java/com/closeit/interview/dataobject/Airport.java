@@ -20,6 +20,12 @@ public class Airport
     {}
 
 
+    public Airport(String airportCode)
+    {
+        this(airportCode, 0, 0, 0, 0);
+    }
+
+
     public Airport(String airportCode, int arrivalsCount, int departureCount, double arrivalsDelay, double departuresDelay)
     {
         this.airportCode = airportCode;
