@@ -1,0 +1,10 @@
+spring
+  data
+    mongodb
+      uri=mongodb://localhost:27017/mydb
+      database=mydb
+application
+  data
+    source=http://stat-computing.org/dataexpo/2009/
+    year=1989
+  temp=/tmp
