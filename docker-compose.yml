@@ -1,14 +1,14 @@
-version: "3"
+version: "2.0"
 services:
-  mongodb:
-    image: mongo:3.2.4
-    container_name: "mongodb"
+  interview-app:
+    image: closeit-interview:0.0.1
     ports:
-      - 27017:27017
-    command: --smallfiles
-  app:
-    image: closeit-interview-app
+      - 8080:8080 # Replace the port of your application here if used
+    depends_on:
+      - interview-db
+  interview-db:
+    image: mongo
+    volumes:
+      - ./database:/data
     ports:
-      - 8080:8080
-    links:
-      - mongodb
+      - "27017:27017"
