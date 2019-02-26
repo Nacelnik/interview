@@ -67,9 +67,7 @@ public class USDTDataLoader {
     {
         airportRepository.deleteAll();
 
-        dataFileProcessor.setInputFileName(getUnzippedOutputFileName());
-
-        Collection<Airport> airports = dataFileProcessor.processFile();
+        Collection<Airport> airports = dataFileProcessor.processFile(getUnzippedOutputFileName());
 
         airportRepository.saveAll(airports);
     }

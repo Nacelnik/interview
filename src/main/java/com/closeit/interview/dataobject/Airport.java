@@ -17,7 +17,9 @@ public class Airport
     public double departuresDelay;
 
     public Airport()
-    {}
+    {
+        this(null);
+    }
 
 
     public Airport(String airportCode)
