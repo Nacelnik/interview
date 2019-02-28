@@ -22,7 +22,8 @@ import java.util.Collection;
  */
 
 @Component
-public class USDTDataLoader {
+public class USDTDataLoader
+{
 
     @Autowired
     private AirportRepository airportRepository;
@@ -49,18 +50,33 @@ public class USDTDataLoader {
     }
 
 
-
-    private void cleanUpTempFiles()
+    private void getAndExtractFile() throws IOException
     {
-        String zippedOutputFileName = getZippedOutputFileName();
-        if (new File(zippedOutputFileName).delete())
-            debug("Deleted downloaded file: ", zippedOutputFileName);
+        debug("Start download", getSourceUrl());
+        downloadFile();
+        debug("Start extracting", getZippedOutputFileName());
+        extractFile();
+        debug("File prepared", getUnzippedOutputFileName());
+    }
 
+    private void downloadFile() throws IOException
+    {
+        URL source = new URL(getSourceUrl());
 
-        String unzippedOutputFileName = getUnzippedOutputFileName();
-        if (new File(unzippedOutputFileName).delete())
-            debug("Deleted extracted file: ", unzippedOutputFileName);
+        ReadableByteChannel readableByteChannel = Channels.newChannel(source.openStream());
 
+        FileOutputStream fileOutputStream = new FileOutputStream(getZippedOutputFileName());
+
+        fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
+    }
+
+    private void extractFile() throws IOException
+    {
+        ReadableByteChannel inputChannel = Channels.newChannel(new BZip2CompressorInputStream(Files.newInputStream(new File(getZippedOutputFileName()).toPath())));
+
+        FileOutputStream fileOutputStream = new FileOutputStream(getUnzippedOutputFileName());
+
+        fileOutputStream.getChannel().transferFrom(inputChannel, 0, Long.MAX_VALUE);
     }
 
     private void processFile() throws IOException
@@ -73,33 +89,17 @@ public class USDTDataLoader {
     }
 
 
-    private void getAndExtractFile() throws IOException
+    private void cleanUpTempFiles()
     {
-        debug("Start download", getSourceUrl());
-        downloadFile();
-        debug("Start extracting", getZippedOutputFileName());
-        extractFile();
-        debug("File prepared", getUnzippedOutputFileName());
-    }
+        String zippedOutputFileName = getZippedOutputFileName();
+        if (new File(zippedOutputFileName).delete())
+            debug("Deleted downloaded file: ", zippedOutputFileName);
 
-    private void extractFile() throws IOException
-    {
-        ReadableByteChannel inputChannel = Channels.newChannel(new BZip2CompressorInputStream(Files.newInputStream(new File(getZippedOutputFileName()).toPath())));
 
-        FileOutputStream fileOutputStream = new FileOutputStream(getUnzippedOutputFileName());
+        String unzippedOutputFileName = getUnzippedOutputFileName();
+        if (new File(unzippedOutputFileName).delete())
+            debug("Deleted extracted file: ", unzippedOutputFileName);
 
-        fileOutputStream.getChannel().transferFrom(inputChannel, 0, Long.MAX_VALUE);
-    }
-
-    private void downloadFile() throws IOException
-    {
-        URL source = new URL(getSourceUrl());
-
-        ReadableByteChannel readableByteChannel = Channels.newChannel(source.openStream());
-
-        FileOutputStream fileOutputStream = new FileOutputStream(getZippedOutputFileName());
-
-        fileOutputStream.getChannel().transferFrom(readableByteChannel, 0, Long.MAX_VALUE);
     }
 
     private String getUnzippedOutputFileName()

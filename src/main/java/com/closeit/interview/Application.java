@@ -9,7 +9,8 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 
 @SpringBootApplication
-public class Application {
+public class Application
+{
 
    @Autowired
    private USDTDataLoader dataLoader;

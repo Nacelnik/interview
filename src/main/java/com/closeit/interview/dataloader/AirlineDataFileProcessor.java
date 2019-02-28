@@ -1,7 +1,7 @@
 package com.closeit.interview.dataloader;
 
 import com.closeit.interview.dataobject.Airport;
-import com.closeit.interview.dataobject.HeaderInfo;
+import com.closeit.interview.dataloader.helper.HeaderInfo;
 import com.opencsv.CSVReader;
 import org.springframework.stereotype.Component;
 
@@ -12,7 +12,8 @@ import java.io.IOException;
 import java.util.*;
 
 @Component
-class AirlineDataFileProcessor {
+class AirlineDataFileProcessor
+{
 
     private static final String CANCELLED_INDICATOR = "1"; //1 -> cancelled, 0-> not
     static final String TOO_SHORT_LINE_MESSAGE = "The line cannot be processed - it is too short.";
@@ -65,15 +66,18 @@ class AirlineDataFileProcessor {
         airports.put(destinationAirport, airportWithArrivalDelay(destinationAirport, destination, arrivalDelay));
     }
 
-    private CSVReader getCSVReader(String inputFileName) throws FileNotFoundException {
+    private CSVReader getCSVReader(String inputFileName) throws FileNotFoundException
+    {
         return new CSVReader(new BufferedReader(new FileReader(inputFileName)));
     }
 
-    private Airport airportWithArrivalDelay(String destinationAirport, Airport destination, double arrivalDelay) {
+    private Airport airportWithArrivalDelay(String destinationAirport, Airport destination, double arrivalDelay)
+    {
         return new Airport(destinationAirport, destination.arrivalsCount + 1, destination.departureCount, destination.arrivalsDelay + arrivalDelay, destination.departuresDelay);
     }
 
-    private Airport airportWithDepartureDelay(String originAirport, Airport origin, double departureDelay) {
+    private Airport airportWithDepartureDelay(String originAirport, Airport origin, double departureDelay)
+    {
         return new Airport(originAirport, origin.arrivalsCount, origin.departureCount + 1, origin.arrivalsDelay, origin.departuresDelay + departureDelay);
     }
 

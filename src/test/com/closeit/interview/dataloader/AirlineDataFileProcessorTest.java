@@ -1,7 +1,7 @@
 package com.closeit.interview.dataloader;
 
 import com.closeit.interview.dataobject.Airport;
-import com.closeit.interview.dataobject.HeaderInfo;
+import com.closeit.interview.dataloader.helper.HeaderInfo;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
@@ -9,7 +9,8 @@ import org.mockito.Mockito;
 import java.util.HashMap;
 import java.util.Map;
 
-public class AirlineDataFileProcessorTest {
+public class AirlineDataFileProcessorTest
+{
 
     @Test
     public void testProcessCorrectLine()
@@ -74,7 +75,8 @@ public class AirlineDataFileProcessorTest {
         }
     }
 
-    private HeaderInfo mockHeaderInfo() {
+    private HeaderInfo mockHeaderInfo()
+    {
         HeaderInfo info = Mockito.mock(HeaderInfo.class);
         Mockito.when(info.getOriginIndex()).then(invocationOnMock -> 0);
         Mockito.when(info.getDestinationIndex()).then(invocationOnMock -> 1);

@@ -9,7 +9,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-public class AirportService {
+public class AirportService
+{
 
     @Autowired
     private AirportRepository repository;
@@ -26,7 +27,7 @@ public class AirportService {
 
 
     @RequestMapping(value = "/delays/airport/{airportCode}", method = RequestMethod.GET)
-    public String getData(@PathVariable String airportCode)
+    public String getAirportData(@PathVariable String airportCode)
     {
         Airport airport = repository.findByAirportCode(airportCode);
 

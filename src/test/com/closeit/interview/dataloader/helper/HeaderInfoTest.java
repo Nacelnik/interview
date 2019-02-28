@@ -1,4 +1,4 @@
-package com.closeit.interview.dataobject;
+package com.closeit.interview.dataloader.helper;
 
 import org.junit.Assert;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package com.closeit.interview.dataobject;
+package com.closeit.interview.dataloader.helper;
 
 import java.util.Arrays;
 import java.util.List;
