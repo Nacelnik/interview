@@ -1,0 +1,13 @@
+Prerequisites:
+maven, docker and docker-compose
+
+To run:
+just execute run.sh in the project's root directory
+
+To see the results:
+http://localhost:8080
+
+You can also try
+http://localhost:8080/delays/airport/SFO or other airport codes at the end
+
+If you want to use different ports, alter the config/application.properties and docker-compose.yml files, it should be self explanatory
