@@ -4,6 +4,7 @@ import com.closeit.interview.dataobject.Airport;
 import com.closeit.interview.dataobject.HeaderInfo;
 import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mockito;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,7 +15,7 @@ public class AirlineDataFileProcessorTest {
     public void testProcessCorrectLine()
     {
         AirlineDataFileProcessor processor = new AirlineDataFileProcessor();
-        HeaderInfo headerInfo = new HeaderInfo(0, 1, 2, 3, 4);
+        HeaderInfo headerInfo = mockHeaderInfo();
 
         String[] flightFromLAXtoSFO = {"LAX", "SFO", "5", "10", "0"};
         String[] flightFromSFOtoLAX = {"SFO", "LAX", "25378", "10", "0"};
@@ -57,7 +58,7 @@ public class AirlineDataFileProcessorTest {
     public void testProcessIncorrectLine()
     {
         AirlineDataFileProcessor processor = new AirlineDataFileProcessor();
-        HeaderInfo headerInfo = new HeaderInfo(0, 1, 2, 3, 4);
+        HeaderInfo headerInfo = mockHeaderInfo();
 
         String[] tooShortLine = {"SFO", "LAX"};
 
@@ -71,5 +72,16 @@ public class AirlineDataFileProcessorTest {
             Assert.assertEquals("The exception should have the correct type", t.getClass(), IllegalArgumentException.class);
             Assert.assertEquals("The exception should have the correct message", AirlineDataFileProcessor.TOO_SHORT_LINE_MESSAGE, t.getMessage());
         }
+    }
+
+    private HeaderInfo mockHeaderInfo() {
+        HeaderInfo info = Mockito.mock(HeaderInfo.class);
+        Mockito.when(info.getOriginIndex()).then(invocationOnMock -> 0);
+        Mockito.when(info.getDestinationIndex()).then(invocationOnMock -> 1);
+        Mockito.when(info.getArrivalDelayIndex()).then(invocationOnMock -> 2);
+        Mockito.when(info.getDepartureDelayIndex()).then(invocationOnMock -> 3);
+        Mockito.when(info.getCancelledIndex()).then(invocationOnMock -> 4);
+        Mockito.when(info.getMinimumLineLength()).then(invocationOnMock -> 5);
+        return info;
     }
 }

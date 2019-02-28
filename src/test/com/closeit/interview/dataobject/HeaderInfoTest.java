@@ -29,10 +29,11 @@ public class HeaderInfoTest
     @Test
     public void testFindIndicesInIncorrectHeader()
     {
-        String[] incorrectHeader = {"This", "header", "is", "almost", "completely", "incorrect"};
+        String[] incorrectHeader = {"This", "header", "is", "almost", "completely", "incorrect", HeaderInfo.DEPARTURE_DELAY};
         try
         {
-            HeaderInfo info = HeaderInfo.fromLine(incorrectHeader);
+            HeaderInfo.fromLine(incorrectHeader);
+            Assert.fail("An exception should have been thrown");
         }
         catch (Throwable t)
         {
