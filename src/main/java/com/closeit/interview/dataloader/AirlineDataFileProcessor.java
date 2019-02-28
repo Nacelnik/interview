@@ -1,6 +1,7 @@
 package com.closeit.interview.dataloader;
 
 import com.closeit.interview.dataobject.Airport;
+import com.closeit.interview.dataobject.HeaderInfo;
 import com.opencsv.CSVReader;
 import org.springframework.stereotype.Component;
 
@@ -14,6 +15,7 @@ import java.util.*;
 class AirlineDataFileProcessor {
 
     private static final String CANCELLED_INDICATOR = "1"; //1 -> cancelled, 0-> not
+    static final String TOO_SHORT_LINE_MESSAGE = "The line cannot be processed - it is too short.";
 
     Collection<Airport> processFile(String inputFileName) throws IOException
     {
@@ -47,7 +49,7 @@ class AirlineDataFileProcessor {
     void processLine(HeaderInfo headerInfo, Map<String, Airport> airports, String[] line)
     {
         if (line.length < headerInfo.getMinimumLineLength())
-            throw new IllegalArgumentException("The line cannot be processed - it is too short;");
+            throw new IllegalArgumentException(TOO_SHORT_LINE_MESSAGE);
 
         String originAirport = line[headerInfo.getOriginIndex()];
         String destinationAirport = line[headerInfo.getDestinationIndex()];
