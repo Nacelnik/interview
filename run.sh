@@ -1,3 +1,3 @@
 #!/usr/bin/env bash
-mvn clean package dockerfile:build
+mvn clean package test dockerfile:build
 docker-compose up

@@ -3,7 +3,7 @@ package com.closeit.interview.dataloader;
 import com.closeit.interview.dataobject.Airport;
 import com.closeit.interview.dataloader.helper.HeaderInfo;
 import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import java.util.HashMap;
